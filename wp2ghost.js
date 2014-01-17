@@ -215,7 +215,7 @@ async.waterfall([
 		}, function (err) {
 			if (err) throw err;
 
-			file.write(JSON.stringify(ghost), function (err) {
+			file.write(JSON.stringify(ghost,null,'\t'), function (err) {
 
 				next(err, [post_count, page_count, tag_count]);
 			});
