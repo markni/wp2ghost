@@ -1,0 +1,19 @@
+{
+  "name": "wp2ghost",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "xml2js": "latest",
+    "request": "latest",
+    "async": "latest",
+    "underscore": "latest",
+    "to-markdown": "latest",
+    "graceful-fs": "~2.0.1"
+  },
+  "author": "",
+  "license": "MIT"
+}
