@@ -1,18 +1,26 @@
 {
   "name": "wp2ghost",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
-  "main": "index.js",
+  "main": "wp2ghost.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "xml2js": "latest",
-    "request": "latest",
-    "async": "latest",
-    "underscore": "latest",
-    "to-markdown": "latest",
+    "xml2js": "~0.4.1",
+    "async": "~0.2.9",
+    "underscore": "~1.5.2",
+    "to-markdown": "0.0.1",
     "graceful-fs": "~2.0.1"
+  },
+  "keywords": [
+    "wordpress",
+    "ghost",
+    "WXR"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xna2/wp2ghost.git"
   },
   "author": "Mark Ni",
   "license": "MIT"
