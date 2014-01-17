@@ -1,5 +1,5 @@
 /*!
- * wp2ghost v0.0.1
+ * wp2ghost v0.0.2
  * Copyright 2014 Mark Ni
  * Licensed under MIT
  */
@@ -12,8 +12,10 @@ var fs = require('graceful-fs'),
 	parser = new xml2js.Parser(),
 	async = require('async'),
 	_ = require('underscore'),
-	tomd = require('to-markdown').toMarkdown,
-	EOL = require('os').EOL,
+	tomd = require('to-markdown').toMarkdown;
+
+
+var EOL = require('os').EOL,
 	EOLre = new RegExp(EOL, 'g');
 
 var source = process.argv.pop();
