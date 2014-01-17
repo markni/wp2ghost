@@ -101,7 +101,7 @@ async.waterfall([
 				tag.id = parseInt(item['wp:term_id'][0]);
 				tag.name = item['wp:tag_name'][0];
 				tag.slug = item['wp:tag_slug'][0];
-				tag.slug = tag.slug.slice(0, 150);
+				tag.slug = tag.slug.slice(0, MAX_SLUG_LEN);
 				tag.description = '';
 
 				tag_name_map[tag.name] = tag.id;
@@ -120,7 +120,7 @@ async.waterfall([
 				pubDate = item.pubDate[0],
 				id = parseInt(item['wp:post_id'][0]),
 				postDate = item['wp:post_date'][0],
-				postLink = item['wp:post_name'][0].slice(0, 150),
+				postLink = item['wp:post_name'][0].slice(0, MAX_SLUG_LEN),
 				postContent = item['content:encoded'][0];
 
 			if (_.isObject(postTitle)) postTitle = 'Untitled';
@@ -137,6 +137,8 @@ async.waterfall([
 			postContent = _.isObject(postContent) ? '' : tomd(postContent);
 
 
+			//performing additional fixes,  probably shouldn't do this as it doesn't check <code> <pre> blocks
+
 			//fixing existing markdown like plaintext, '----' most likely means a hr
 			postContent = postContent.replace(/\n*(-|=){2,} *(?:\n+|$)/g, '\n* * *\n');
 
@@ -144,6 +146,10 @@ async.waterfall([
 
 			//fixing line breaks with markdown syntax by adding two extra spaces
 			postContent = postContent.replace(/\n/g, '  \n');
+			//replacing <br> tags with markdown line break
+			postContent = postContent.replace(/<br( {0,1})(\/{0,1})>/gi, '  \n');
+
+			//TODO: need fix wordpress short code to markdown/html, such as [caption][/caption]
 
 			post.id = id;
 			post.title = postTitle;
