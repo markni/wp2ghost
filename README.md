@@ -12,5 +12,5 @@ Convert wordpress XML export data into a JSON file that ghost can import
 ##conversion
 
 - go to Wordpress - Tools - Export All, get the backup.xml
-- run `node index backup.xml` to get the json file
-- go to http://yourghostblog.com/ghost/debug, import the json file 
+- run `node wp2ghost backup.xml`, a 'backup.xml.json' file will be created in the same directory
+- go to http://your-ghost-blog.com/ghost/debug, import the generated json file
