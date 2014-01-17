@@ -1,10 +1,14 @@
 wp2ghost
 ========
 
-Convert wordpress XML export data into a JSON file that ghost can import
+Convert wordpress XML export data (WordPress eXtended RSS or WXR) into a JSON file that ghost can import
 
 ![](http://nagi.ca/u/769a93e5e676.png)
 
+
+##system requirement
+
+- need have nodejs installed
 
 ##installation
 
