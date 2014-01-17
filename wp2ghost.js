@@ -143,9 +143,6 @@ async.waterfall([
 					}
 				}
 
-
-
-				postLink = item['wp:post_id'][0];
 				postContent = _.isObject(postContent) ? '' : tomd(postContent);
 
 
