@@ -17,7 +17,7 @@ var fs = require('graceful-fs'),
 	EOLre = new RegExp(EOL, 'g');
 
 var source = process.argv.pop();
-if (!source || source.search('.xml') < 0) return console.log('\nInvalid command. \n\nUsage: node wp2ghost yourwordpressfile.xml');
+if (!source || source.search('.xml') !== source.length-4) return console.log('\nInvalid command. \n\nUsage: node wp2ghost yourwordpressfile.xml');
 
 var MAX_SLUG_LEN = 150; //ghost currently limit slug length to 150 in db, which is shorter than wordpress's 200 limit
 
