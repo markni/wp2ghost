@@ -111,7 +111,7 @@ async.waterfall([
 			});
 		}
 
-		console.log('Processing Posts...');
+		console.log('Processing posts...');
 		async.forEach(arr, function (item, done) {
 
 			var post = {};   // a ghost post object
