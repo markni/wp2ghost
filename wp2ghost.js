@@ -63,6 +63,7 @@ async.waterfall([
 		// Transform EOL
 		var data = EOL === '\n' ? data : data.replace(EOLre, '\n');
 
+
 		// Remove UTF BOM
 		data = data.replace(/^\uFEFF/, '');
 
@@ -100,6 +101,7 @@ async.waterfall([
 				tag_count++;
 				var tag = {};
 
+
 				tag.id = parseInt(item['wp:term_id'][0]);
 				tag.name = item['wp:tag_name'][0];
 				tag.slug = item['wp:tag_slug'][0];
@@ -116,103 +118,118 @@ async.waterfall([
 		console.log('Processing posts...');
 		async.forEach(arr, function (item, done) {
 
-			var post = {};   // a ghost post object
+			var postType = item['wp:post_type'][0];
 
-			var postTitle = item.title[0],
-				pubDate = item.pubDate[0],
-				id = parseInt(item['wp:post_id'][0]),
-				postDate = item['wp:post_date'][0],
-				postLink = item['wp:post_name'][0].slice(0, MAX_SLUG_LEN),
-				postContent = item['content:encoded'][0];
+			if (postType === 'post' || postType === 'page'){
 
-			if (_.isObject(postTitle)) postTitle = 'Untitled';
+				var post = {};   // a ghost post object
 
-			if (!postLink || _.isObject(postLink)) {
-				if (postTitle)
-					postLink = postTitle.toLowerCase().split(' ').join('-');
-				else {
-					postLink = item['wp:post_id'][0];
+				var postTitle = item.title[0],
+					pubDate = item.pubDate[0],
+					id = parseInt(item['wp:post_id'][0]),
+					postDate = item['wp:post_date'][0],
+					postLink = item['wp:post_name'][0].slice(0, MAX_SLUG_LEN),
+					postContent = item['content:encoded'][0];
+
+
+
+				if (_.isObject(postTitle)) postTitle = 'Untitled';
+
+				if (!postLink || _.isObject(postLink)) {
+					if (postTitle)
+						postLink = postTitle.toLowerCase().split(' ').join('-');
+					else {
+						postLink = item['wp:post_id'][0];
+					}
 				}
-			}
-
-			postLink = item['wp:post_id'][0];
-			postContent = _.isObject(postContent) ? '' : tomd(postContent);
 
 
-			//performing additional fixes,  probably shouldn't do this as it doesn't check <code> <pre> blocks
 
-			//fixing existing markdown like plaintext, '----' most likely means a hr
-			postContent = postContent.replace(/\n*(-|=){2,} *(?:\n+|$)/g, '\n* * *\n');
+				postLink = item['wp:post_id'][0];
+				postContent = _.isObject(postContent) ? '' : tomd(postContent);
 
-			postContent = postContent.replace(/\r\n/g, '\n');
 
-			//fixing line breaks with markdown syntax by adding two extra spaces
-			postContent = postContent.replace(/\n/g, '  \n');
-			//replacing <br> tags with markdown line break
-			postContent = postContent.replace(/<br( {0,1})(\/{0,1})>/gi, '  \n');
+				//performing additional fixes,  probably shouldn't do this as it doesn't check <code> <pre> blocks
 
-			//TODO: need fix wordpress short code to markdown/html, such as [caption][/caption]
+				//fixing existing markdown like plaintext, '----' most likely means a hr
+				postContent = postContent.replace(/\n*(-|=){2,} *(?:\n+|$)/g, '\n* * *\n');
 
-			post.id = id;
-			post.title = postTitle;
-			post.slug = postLink;
-			post.markdown = postContent;
-			post.image = post.meta_title = post.meta_description = null;
-			post.author_id = post.created_by = post.updated_by = post.published_by = 1;
-			post.html = null;
-			post.page = 0;
-			post.published_at = (+new Date(pubDate));
-			post.created_at = post.updated_at = (+new Date(postDate));
-			post.status = item['wp:status'][0] === 'publish' ? 'published' : 'draft';
-			post.language = 'en_US';
+				postContent = postContent.replace(/\r\n/g, '\n');
 
-			switch (item['wp:post_type'][0]) {
-				case 'post':
-					post_count++;
+				//fixing line breaks with markdown syntax by adding two extra spaces
+				postContent = postContent.replace(/\n/g, '  \n');
+				//replacing <br> tags with markdown line break
+				postContent = postContent.replace(/<br( {0,1})(\/{0,1})>/gi, '  \n');
 
-					var cats = item.category;
+				//TODO: need fix wordpress short code to markdown/html, such as [caption][/caption]
 
-					_.each(cats, function (item) {
-						if (!_.isString(item)) {
-							switch (item.$.domain) {
-								case 'post_tag':
-									if (tags && tags.length > 0) {
+				post.id = id;
+				post.title = postTitle;
+				post.slug = postLink;
+				post.markdown = postContent;
+				post.image = post.meta_title = post.meta_description = null;
+				post.author_id = post.created_by = post.updated_by = post.published_by = 1;
+				post.html = null;
+				post.page = 0;
+				post.published_at = (+new Date(pubDate));
+				post.created_at = post.updated_at = (+new Date(postDate));
+				post.status = item['wp:status'][0] === 'publish' ? 'published' : 'draft';
+				post.language = 'en_US';
 
-										var post_tag = {};
-										post_tag.tag_id = parseInt(tag_name_map[item._]);
-										post_tag.post_id = parseInt(id);
+				switch (postType) {
+					case 'post':
+						post_count++;
 
-										ghost.data.posts_tags.push(post_tag);
+						var cats = item.category;
 
-									}
+						_.each(cats, function (item) {
+							if (!_.isString(item)) {
+								switch (item.$.domain) {
+									case 'post_tag':
+										if (tags && tags.length > 0) {
 
-									break;
-								case 'category':
+											var post_tag = {};
+											post_tag.tag_id = parseInt(tag_name_map[item._]);
+											post_tag.post_id = parseInt(id);
 
-									break;
+											ghost.data.posts_tags.push(post_tag);
+
+										}
+
+										break;
+									case 'category':
+
+										break;
+								}
 							}
-						}
-					});
+						});
 
-					ghost.data.posts.push(post);
+						ghost.data.posts.push(post);
 
-					done();
+						done();
 
-					break;
+						break;
 
-				case 'page':
-					page_count++;
+					case 'page':
+						page_count++;
 
-					post.page = 1;
+						post.page = 1;
 
-					ghost.data.posts.push(post);
+						ghost.data.posts.push(post);
 
-					done();
-					break;
+						done();
+						break;
 
-				default:
-					done();
+					default:
+						done();
+				}
+
 			}
+			else{
+				done();
+			}
+
+
 
 		}, function (err) {
 			if (err) throw err;
