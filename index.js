@@ -55,7 +55,7 @@ var writeFile = function(destination, content, callback) {
 
 
 file.write = function(content, callback){
-	fs.writeFile('test.json', content, callback);
+	fs.writeFile(source+'.json', content, callback);
 };
 
 
@@ -101,7 +101,7 @@ async.waterfall([
 
 		tags.forEach(function(item){
 			var tag = {};
-			console.log(item);
+
 			tag.id = parseInt(item['wp:term_id'][0]);
 			tag.name = item['wp:tag_name'][0];
 			tag.slug = item['wp:tag_slug'][0];
@@ -157,7 +157,7 @@ async.waterfall([
 			post.html = "";
 			post.page = 0;
 			post.created_at = post.published_at = post.updated_at =  (+new Date(postDate));
-			post.status = "published";
+			post.status = item['wp:status'][0] === 'publish' ? 'published' : 'draft';
 			post.language = 'en_US';
 
 
@@ -166,10 +166,8 @@ async.waterfall([
 				case 'post':
 					length++;
 
-					var postStatus = item['wp:status'][0] === 'publish' ? '_posts/' : '_drafts/',
+					var
 						cats = item.category;
-//						categories = [],
-//						postTag = [];
 
 					_.each(cats, function(item){
 						if (!_.isString(item)){
@@ -181,7 +179,6 @@ async.waterfall([
 									post_tag.tag_id = parseInt(tag_name_map[item._]);
 									post_tag.post_id = parseInt(id);
 
-									console.log(post_tag.tag_id,post_tag.post_id);
 
 									ghost.data.posts_tags.push(post_tag);
 
@@ -193,10 +190,6 @@ async.waterfall([
 							}
 						}
 					});
-
-//					if (postTag.length) postTag = '\n- ' + _.uniq(postTag).join('\n- ');
-//					if (categories.length) categories = '\n- ' + _.uniq(categories).join('\n- ');
-
 
 
 
