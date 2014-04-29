@@ -61,8 +61,7 @@ async.waterfall([
 	},
 	function (data, next) {
 		// Transform EOL
-		var data = EOL === '\n' ? data : data.replace(EOLre, '\n');
-
+		data = EOL === '\n' ? data : data.replace(EOLre, '\n');
 
 		// Remove UTF BOM
 		data = data.replace(/^\uFEFF/, '');
@@ -97,12 +96,11 @@ async.waterfall([
 		if (tags && tags.length > 0) {
 			console.log('Processing tags...');
 
-			tags.forEach(function (item) {
+			tags.forEach(function (item, i) {
 				tag_count++;
 				var tag = {};
 
-
-				tag.id = parseInt(item['wp:term_id'][0]);
+				tag.id = item['wp:term_id'] ? parseInt(item['wp:term_id'][0]) : i;
 				tag.name = item['wp:tag_name'][0];
 				tag.slug = item['wp:tag_slug'][0];
 				tag.slug = tag.slug.slice(0, MAX_SLUG_LEN);
