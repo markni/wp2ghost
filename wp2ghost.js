@@ -22,6 +22,7 @@ var source = process.argv.pop();
 if (!source || source.search('.xml') !== source.length-4) return console.log('\nInvalid command. \n\nUsage: node wp2ghost yourwordpressfile.xml');
 
 var MAX_SLUG_LEN = 150; //ghost currently limit slug length to 150 in db, which is shorter than wordpress's 200 limit
+var MAX_POST_TITLE_LEN = 150; //ghost currently limit title length to 150 in db, while wordpress is unlimited...
 
 // I/O Helper functions
 var file = {
@@ -132,6 +133,9 @@ async.waterfall([
 
 
 				if (_.isObject(postTitle)) postTitle = 'Untitled';
+				if (postTitle==='') postTitle = 'Untitled';
+				postTitle = postTitle.slice(0, MAX_POST_TITLE_LEN);
+
 
 				if (!postLink || _.isObject(postLink)) {
 					if (postTitle)
