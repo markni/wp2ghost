@@ -1,6 +1,6 @@
 {
   "name": "wp2ghost",
-  "version": "0.0.3.1",
+  "version": "0.3.1",
   "description": "",
   "main": "wp2ghost.js",
   "scripts": {
