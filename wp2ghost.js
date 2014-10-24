@@ -5,24 +5,21 @@
  */
 
 
-/*! modified from hexo-migrator-wordpress | MIT License | https://npmjs.org/package/hexo-migrator-wordpress */
-
-var fs = require('graceful-fs'),
-	xml2js = require('xml2js'),
-	parser = new xml2js.Parser(),
-	async = require('async'),
-	_ = require('underscore'),
-	tomd = require('to-markdown').toMarkdown;
-
-
-var EOL = require('os').EOL,
-	EOLre = new RegExp(EOL, 'g');
-
 var source = process.argv.pop();
+
 if (!source || source.search('.xml') !== source.length-4) return console.log('\nInvalid command. \n\nUsage: node wp2ghost yourwordpressfile.xml');
 
+
+var fs = require('graceful-fs');
+var	xml2js = require('xml2js');
+var parser = new xml2js.Parser();
+var async = require('async');
+var _ = require('underscore');
+var tomd = require('to-markdown').toMarkdown;
+var EOL = require('os').EOL;
+var EOLre = new RegExp(EOL, 'g');
 var MAX_SLUG_LEN = 150; //ghost currently limit slug length to 150 in db, which is shorter than wordpress's 200 limit
-var MAX_POST_TITLE_LEN = 150; //ghost currently limit title length to 150 in db, while wordpress is unlimited...
+var MAX_POST_TITLE_LEN = 150; //ghost currently limit title length to 150 in db, while wordpress is unlimited
 
 // I/O Helper functions
 var file = {
@@ -43,7 +40,7 @@ var file = {
 
 		fs.open(source + '.json', "w", function (err, fd) {
 			if (err) callback(err);
-			fs.write(fd, content, 0, "utf8", function (err, written, buffer) {
+			fs.write(fd, content, 0, "utf8", function (err) {
 				if (!err) {
 					console.log(source + '.json has been created.');
 				}
@@ -87,10 +84,10 @@ async.waterfall([
 
 		var tag_name_map = {};
 
-		var post_count = 0,
-			page_count = 0,
-			tag_count = 0,
-			arr = data.rss.channel[0].item;
+		var post_count = 0;
+		var page_count = 0;
+		var tag_count = 0;
+		var arr = data.rss.channel[0].item;
 
 		var tags = data.rss.channel[0]['wp:tag'];
 
@@ -115,6 +112,7 @@ async.waterfall([
 		}
 
 		console.log('Processing posts...');
+
 		async.forEach(arr, function (item, done) {
 
 			var postType = item['wp:post_type'][0];
