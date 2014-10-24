@@ -22,6 +22,10 @@ Convert wordpress XML export data (WordPress eXtended RSS or WXR) into a JSON fi
 - run `node wp2ghost backup.xml`, a 'backup.xml.json' file will be created in the same directory
 - go to http://your-ghost-blog.com/ghost/debug, import the generated json file
 
+##Known Issues
+
+- This tool may break some of the contents inside <code> and <pre> blocks, use as your own risk
+
 
 ##License
 
