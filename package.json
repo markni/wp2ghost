@@ -7,11 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "xml2js": "~0.4.1",
     "async": "~0.2.9",
+    "graceful-fs": "~2.0.1",
+    "to-markdown": "~0.0.2",
     "underscore": "~1.5.2",
-    "to-markdown": "0.0.1",
-    "graceful-fs": "~2.0.1"
+    "xml2js": "~0.4.1"
   },
   "keywords": [
     "wordpress",
