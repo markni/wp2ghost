@@ -24,7 +24,7 @@ Convert wordpress XML export data (WordPress eXtended RSS or WXR) into a JSON fi
 
 ##Known Issues
 
-- This tool may break some of the contents inside <code> and <pre> blocks, use as your own risk
+- This tool may break some of the contents inside ``<code>`` and ``<pre>`` blocks, use as your own risk
 
 
 ##License
