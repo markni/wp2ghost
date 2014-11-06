@@ -1,5 +1,5 @@
 /*!
- * wp2ghost v0.0.2
+ * wp2ghost v0.3.2
  * Copyright 2014 Mark Ni
  * Licensed under MIT
  */
@@ -58,6 +58,8 @@ async.waterfall([
 		file.read(source, next);
 	},
 	function (data, next) {
+		console.log('Cleaning up OS EOL and UTF Byte order mark...');
+
 		// Transform EOL
 		data = EOL === '\n' ? data : data.replace(EOLre, '\n');
 
@@ -67,11 +69,57 @@ async.waterfall([
 		next(null, data);
 	},
 	function (data, next) {
-		console.log('Parsing XML...');
+		console.log('Parsing wordpress backup XML file...');
 		parser.parseString(data, next);
 	},
+	function (data,next){
+
+		console.log('Preparing attachments index...');
+
+		var items = data.rss.channel[0].item;
+
+		var attachments = {};
+		var parent_child_map = {};
+
+		var unused_items = [];
+
+		async.forEach(items, function (item, done) {
+				var postType = item['wp:post_type'][0];
+
+				if (postType === 'attachment'){
+					var url = item['wp:attachment_url'][0];
+					var caption = item['content:encoded'][0];
+					var alt = item['excerpt:encoded'][0];
+					var id = item['wp:post_id'][0];
+					var parent = item['wp:post_parent'][0];
+					if(!parent_child_map.hasOwnProperty(parent)){
+						parent_child_map[parent] = [];
+					}
+
+					attachments[id] = {url:url,alt:alt,caption:caption};
+					parent_child_map[parent].push(attachments[id] );
+
+				}
+			  else {
+					unused_items.push(item);
+				}
+				done();
+
+		}, function(err){
+			if (err) throw err;
+
+			data.rss.channel[0].item = unused_items;
+
+			data.extra = {};
+			data.extra.attachments = attachments;
+			data.extra.parent_child_map = parent_child_map;
+
+			next(null,data);
+		});
+
+	},
+
 	function (data, next) {
-		console.log('Analyzing...');
 
 		var ghost = {
 			meta: {"exported_on": (+new Date()), "version": "000"},
@@ -130,8 +178,8 @@ async.waterfall([
 
 
 
-				if (_.isObject(postTitle)) postTitle = 'Untitled';
-				if (postTitle==='') postTitle = 'Untitled';
+				if (_.isObject(postTitle)) postTitle = '(Untitled)';
+				if (postTitle==='') postTitle = '(Untitled)';
 				postTitle = postTitle.slice(0, MAX_POST_TITLE_LEN);
 
 
@@ -155,10 +203,22 @@ async.waterfall([
 
 				//fixing line breaks with markdown syntax by adding two extra spaces
 				postContent = postContent.replace(/\n/g, '  \n');
+
 				//replacing <br> tags with markdown line break
 				postContent = postContent.replace(/<br( {0,1})(\/{0,1})>/gi, '  \n');
 
-				//TODO: need fix wordpress short code to markdown/html, such as [caption][/caption]
+				//TODO: need fix build-in wordpress short code to markdown/html, such as [caption][/caption]
+
+//				postContent = postContent.replace(/\[gallery(.*?)\]/g, function(match){
+//					console.log(id,postTitle);
+//					var imgs = data.extra.parent_child_map[id];
+//					var md = '';
+//					imgs.forEach(function(img){
+//						md+= '!['+img.alt+']('+img.url+' "'+ img.caption +'")\n';
+//					});
+//
+//					return md;
+//				});
 
 				post.id = id;
 				post.title = postTitle;
