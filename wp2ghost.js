@@ -114,6 +114,7 @@ async.waterfall([
 			data.extra.attachments = attachments;
 			data.extra.parent_child_map = parent_child_map;
 
+
 			next(null,data);
 		});
 
@@ -169,18 +170,38 @@ async.waterfall([
 
 				var post = {};   // a ghost post object
 
-				var postTitle = item.title[0],
-					pubDate = item.pubDate[0],
-					id = parseInt(item['wp:post_id'][0]),
-					postDate = item['wp:post_date'][0],
-					postLink = item['wp:post_name'][0].slice(0, MAX_SLUG_LEN),
-					postContent = item['content:encoded'][0];
+				var postTitle = item.title[0];
+				var	pubDate = item.pubDate[0];
+				var	id = parseInt(item['wp:post_id'][0]);
+				var	postDate = item['wp:post_date'][0];
+				var	postLink = item['wp:post_name'][0].slice(0, MAX_SLUG_LEN);
+				var	postContent = item['content:encoded'][0];
+				var	postMetas = item['wp:postmeta'] || [];
+				var postImage = null;
 
 
+				postMetas.forEach(function(meta){
 
+					//todo: add support for seo meta info
+					if(meta.hasOwnProperty('wp:meta_key') && meta['wp:meta_key'] == '_thumbnail_id'){
+
+						var attachment_id = meta['wp:meta_value'];     // this is a string
+						var feature_image = data.extra.attachments[attachment_id];
+
+						if(feature_image && feature_image.url){
+
+							postImage = feature_image.url;
+
+						}
+					}
+				});
+
+
+				//process post title to correct fomart
 				if (_.isObject(postTitle)) postTitle = '(Untitled)';
 				if (postTitle==='') postTitle = '(Untitled)';
 				postTitle = postTitle.slice(0, MAX_POST_TITLE_LEN);
+
 
 
 				if (!postLink || _.isObject(postLink)) {
@@ -224,9 +245,10 @@ async.waterfall([
 				post.title = postTitle;
 				post.slug = postLink;
 				post.markdown = postContent;
-				post.image = post.meta_title = post.meta_description = null;
+				post.image = postImage;
+				post.meta_title = post.meta_description = null;
 				post.author_id = post.created_by = post.updated_by = post.published_by = 1;
-				post.html = null;
+				post.html = null; // to save import time, discard old htmls; could have an option to keep them
 				post.page = 0;
 				post.published_at = (+new Date(pubDate));
 				post.created_at = post.updated_at = (+new Date(postDate));
