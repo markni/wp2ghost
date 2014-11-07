@@ -1,5 +1,5 @@
 /*!
- * wp2ghost v0.3.2
+ * wp2ghost v0.3.3
  * Copyright 2014 Mark Ni
  * Licensed under MIT
  */
@@ -9,7 +9,7 @@ var source = process.argv.pop();
 
 if (!source || source.search('.xml') !== source.length-4) return console.log('\nInvalid command. \n\nUsage: node wp2ghost yourwordpressfile.xml');
 
-
+var ProgressBar = require('progress');
 var fs = require('graceful-fs');
 var	xml2js = require('xml2js');
 var parser = new xml2js.Parser();
@@ -20,6 +20,7 @@ var EOL = require('os').EOL;
 var EOLre = new RegExp(EOL, 'g');
 var MAX_SLUG_LEN = 150; //ghost currently limit slug length to 150 in db, which is shorter than wordpress's 200 limit
 var MAX_POST_TITLE_LEN = 150; //ghost currently limit title length to 150 in db, while wordpress is unlimited
+var bar;
 
 // I/O Helper functions
 var file = {
@@ -42,7 +43,7 @@ var file = {
 			if (err) callback(err);
 			fs.write(fd, content, 0, "utf8", function (err) {
 				if (!err) {
-					console.log(source + '.json has been created.');
+					console.log('\n'+source + '.json has been created.');
 				}
 				callback(err);
 			});
@@ -53,12 +54,16 @@ var file = {
 
 async.waterfall([
 	function (next) {
-		console.log('Fetching %s...', source);
+		console.log('\nFetching %s \n', source);
+
 
 		file.read(source, next);
 	},
 	function (data, next) {
-		console.log('Cleaning up OS EOL and UTF Byte order mark...');
+		bar = new ProgressBar('Parsing XML [:bar] :percent :elapseds', {
+			width: 20,
+			total: 10
+		});
 
 		// Transform EOL
 		data = EOL === '\n' ? data : data.replace(EOLre, '\n');
@@ -69,14 +74,18 @@ async.waterfall([
 		next(null, data);
 	},
 	function (data, next) {
-		console.log('Parsing wordpress backup XML file...');
+		bar.tick(1);
+
 		parser.parseString(data, next);
 	},
 	function (data,next){
-
-		console.log('Preparing attachments index...');
-
+		bar.tick(9);
 		var items = data.rss.channel[0].item;
+
+		bar = new ProgressBar('Processing attachments [:bar] :percent :elapseds', {
+			width: 20,
+			total: items.length
+		});
 
 		var attachments = {};
 		var parent_child_map = {};
@@ -84,6 +93,7 @@ async.waterfall([
 		var unused_items = [];
 
 		async.forEach(items, function (item, done) {
+				bar.tick();
 				var postType = item['wp:post_type'][0];
 
 				if (postType === 'attachment'){
@@ -141,9 +151,14 @@ async.waterfall([
 		var tags = data.rss.channel[0]['wp:tag'];
 
 		if (tags && tags.length > 0) {
-			console.log('Processing tags...');
+			bar = new ProgressBar('Processing tags [:bar] :percent :elapseds', {
+				width: 20,
+				total: tags.length
+			});
+
 
 			tags.forEach(function (item, i) {
+				bar.tick();
 				tag_count++;
 				var tag = {};
 
@@ -160,9 +175,14 @@ async.waterfall([
 			});
 		}
 
-		console.log('Processing posts...');
+		bar = new ProgressBar('Processing posts [:bar] :percent :elapseds', {
+			width: 20,
+			total: arr.length
+		});
 
 		async.forEach(arr, function (item, done) {
+
+			bar.tick();
 
 			var postType = item['wp:post_type'][0];
 
@@ -322,5 +342,5 @@ async.waterfall([
 	}
 ], function (err, counter) {
 	if (err) throw err;
-	console.log('%d posts, %d pages and %d tags converted.', counter[0], counter[1], counter[2]);
+	console.log('\n%d posts, %d pages and %d tags converted.\n', counter[0], counter[1], counter[2]);
 });

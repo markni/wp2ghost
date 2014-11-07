@@ -1,14 +1,15 @@
 {
   "name": "wp2ghost",
-  "version": "0.3.2",
-  "description": "",
+  "version": "0.3.3",
+  "description": "An utility tool that converts Wordpress backup file into Ghost backup file.",
   "main": "wp2ghost.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node wp2ghost test/wptest.xml"
   },
   "dependencies": {
     "async": "~0.2.9",
     "graceful-fs": "~2.0.1",
+    "progress": "^1.1.8",
     "to-markdown": "~0.0.2",
     "underscore": "~1.5.2",
     "xml2js": "~0.4.1"
@@ -22,6 +23,7 @@
     "type": "git",
     "url": "https://github.com/xna2/wp2ghost.git"
   },
+	"engine": "node >= 0.10",
   "author": "Mark Ni",
   "license": "MIT"
 }
