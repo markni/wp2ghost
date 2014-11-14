@@ -1,36 +1,36 @@
 {
   "name": "wp2ghost",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "An utility tool that converts Wordpress backup file into Ghost backup file.",
   "main": "wp2ghost.js",
   "scripts": {
     "test": "node wp2ghost test/wptest.xml"
   },
   "dependencies": {
-    "async": "~0.2.9",
-    "graceful-fs": "~2.0.1",
+    "async": "^0.9.0",
+    "graceful-fs": "^3.0.4",
     "progress": "^1.1.8",
     "to-markdown": "~0.0.2",
-    "underscore": "~1.5.2",
-    "xml2js": "~0.4.1"
+    "underscore": "^1.7.0",
+    "xml2js": "^0.4.4"
   },
-	"bin":{
-		"wp2ghost":"./wp2ghost.js"
-	},
+  "bin": {
+    "wp2ghost": "./wp2ghost.js"
+  },
   "keywords": [
     "wordpress",
     "ghost",
     "WXR"
   ],
-	"preferGlobal": true,
+  "preferGlobal": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/xna2/wp2ghost.git"
   },
-	"bugs":{
-		"url":"https://github.com/xna2/wp2ghost/issues"
-	},
-	"engine": "node >= 0.10",
+  "bugs": {
+    "url": "https://github.com/xna2/wp2ghost/issues"
+  },
+  "engine": "node >= 0.10",
   "author": "Mark Ni",
   "license": "MIT"
 }
