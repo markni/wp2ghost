@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*!
- * wp2ghost v0.3.7
+ * wp2ghost v0.3.81
  * Copyright 2014 Mark Ni
  * Licensed under MIT
  */
@@ -9,7 +9,7 @@
 
 'use strict';
 
-process.title = "wp2ghost"
+process.title = "wp2ghost";
 
 var source = process.argv.pop();
 

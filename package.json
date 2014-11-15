@@ -1,6 +1,6 @@
 {
   "name": "wp2ghost",
-  "version": "0.3.8",
+  "version": "0.3.81",
   "description": "An utility tool that converts Wordpress backup file into Ghost backup file.",
   "main": "wp2ghost.js",
   "scripts": {
