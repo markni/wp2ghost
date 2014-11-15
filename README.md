@@ -1,4 +1,4 @@
-wp2ghost [![Build Status](https://travis-ci.org/xna2/wp2ghost.svg?branch=master)](https://travis-ci.org/xna2/wp2ghost)
+wp2ghost [![Build Status](https://travis-ci.org/markni/wp2ghost.svg?branch=master)](https://travis-ci.org/markni/wp2ghost)
 ========
 
 Convert wordpress XML export data (WordPress eXtended RSS or WXR) into a JSON file that ghost can import
@@ -16,7 +16,7 @@ Convert wordpress XML export data (WordPress eXtended RSS or WXR) into a JSON fi
 
 alternatively, you could
 
-- Download [zip package](https://github.com/xna2/wp2ghost/archive/master.zip) and unpack.
+- Download [zip package](https://github.com/markni/wp2ghost/archive/master.zip) and unpack.
 - Run `npm install` in package folder
 
 
